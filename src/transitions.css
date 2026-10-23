@@ -1,0 +1,28 @@
+.world-app { min-height: 100svh; overflow: hidden; }
+.world-stage { position: relative; width: 100%; height: 100svh; min-height: 620px; isolation: isolate; overflow: hidden; }
+.scene-layer { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.world-stage:not([data-transition="idle"]) .scene-layer {
+  transition: transform 900ms cubic-bezier(.65, 0, .35, 1), opacity 900ms cubic-bezier(.65, 0, .35, 1), border-radius 900ms, clip-path 900ms cubic-bezier(.65, 0, .35, 1);
+  will-change: transform, opacity;
+}
+.scene-layer[data-layer="inner"] { z-index: 2; background: #14131b; }
+.world-stage[data-transition="enter"][data-started="false"] [data-layer="inner"],
+.world-stage[data-transition="return"][data-started="true"] [data-layer="inner"] {
+  transform: translate(var(--origin-x), var(--origin-y)) scale(var(--mini-x), var(--mini-y));
+  border-radius: 70px;
+  clip-path: polygon(48% 8%, 52% 8%, 97% 46%, 97% 54%, 52% 92%, 48% 92%, 3% 54%, 3% 46%);
+}
+.world-stage[data-transition="enter"][data-started="true"] [data-layer="inner"],
+.world-stage[data-transition="return"][data-started="false"] [data-layer="inner"] {
+  transform: translate(0, 0) scale(1, 1); border-radius: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 100%, 0 0);
+}
+.world-stage[data-transition="enter"][data-started="true"] [data-layer="parent"],
+.world-stage[data-transition="return"][data-started="false"] [data-layer="parent"] {
+  transform: scale(1.12); opacity: .08;
+}
+.world-stage[data-transition="enter"][data-started="false"] [data-layer="parent"],
+.world-stage[data-transition="return"][data-started="true"] [data-layer="parent"] {
+  transform: scale(1); opacity: 1;
+}
+@media (max-width: 600px) { .world-stage { min-height: 680px; } }

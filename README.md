@@ -1,6 +1,10 @@
 # rosstroha.com
 
-Personal website built with React and Vite.
+A React and Vite portfolio with nested isometric worlds for professional experience, projects, and interests.
+
+Enter a tile to explore its interior. Use the return button to go back. URLs such as `/#about` and `/#biography` support direct links, refresh, and browser history.
+
+This is a work in progress so anyone reading this README.md is likely here because they noticed how empty the site is!
 
 ## Development
 
@@ -9,11 +13,3 @@ npm install
 npm run dev
 ```
 
-## Build and deploy
-
-```bash
-npm run build
-```
-
-Pushes to `main` automatically build and deploy `dist` through GitHub Actions.
-In the repository settings, set GitHub Pages' source to **GitHub Actions**.
