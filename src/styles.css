@@ -4,7 +4,6 @@ body { margin: 0; min-width: 320px; }
 button { font: inherit; color: inherit; }
 button:focus-visible, a:focus-visible { outline: 2px solid #f3f0ff; outline-offset: 7px; }
 button:disabled { cursor: default; }
-.world-stage { position: relative; overflow: hidden; }
 .world-scene { width: 100%; height: 100%; min-height: 100svh; position: relative; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--accent) 5%, #191a20), #14151a 70%); }
 .world-scene::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .2; background-image: radial-gradient(#6e6c80 .5px, transparent .5px); background-size: 6px 6px; mask-image: radial-gradient(ellipse, black, transparent 75%); }
 .scene-caption { position: absolute; top: 34px; left: 40px; right: 40px; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: .22em; color: #8a8995; }
@@ -96,9 +95,6 @@ h1:focus { outline: none; }
   .world-tile { width: 150px; padding-bottom: 40px; }
   .miniature { transform: scale(.6); }
   .leaf-world .main-tile { width: 300px; height: 240px; padding: 28px 65px; }
-  .leaf-world .main-tile::before { width: 72%; }
-  .leaf-world .world-marker, .leaf-world .tile-eyebrow { display: none; }
-  .leaf-world h1 { font-size: 25px; }
   .leaf-world .world-description { max-width: 140px; font-size: 9.5px; line-height: 1.5; margin-top: 8px; }
   .leaf-world .return-control { top: 45px; }
 }

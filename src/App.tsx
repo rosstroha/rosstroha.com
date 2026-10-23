@@ -11,7 +11,6 @@ function App(): React.JSX.Element {
   const stage = useRef<HTMLDivElement>(null)
   const [journey, setJourney] = useState<Journey | null>(null)
   const [started, setStarted] = useState(false)
-  const origins = useRef(new Map<string, Origin>())
   const focusTile = useRef<string | null>(null)
   const previousWorld = useRef(current)
   const returnMeasured = useRef(false)
@@ -61,19 +60,16 @@ function App(): React.JSX.Element {
   const enter = (node: World, element: HTMLElement) => {
     if (journey) return
     const origin = measure(element)
-    origins.current.set(node.id, origin)
-    focusTile.current = null
     if (!reduced) setJourney({ from: current, to: node, direction: 'enter', origin })
     navigate(node)
   }
   const goBack = () => {
     const parent = parents.get(current.id)
     if (journey || !parent) return
-    focusTile.current = current.id
     returnMeasured.current = false
     if (!reduced) setJourney({
       from: current, to: parent, direction: 'return',
-      origin: origins.current.get(current.id) ?? { x: 0, y: 0, width: 160, height: 100 }
+      origin: { x: 0, y: 0, width: 160, height: 100 }
     })
     navigate(parent)
   }
@@ -88,7 +84,6 @@ function App(): React.JSX.Element {
       layer.style.transform = 'none'
       const origin = measure(tile)
       layer.style.removeProperty('transform')
-      origins.current.set(journey.from.id, origin)
       setJourney({ ...journey, origin })
     }
   }, [journey])

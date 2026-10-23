@@ -26,4 +26,3 @@
   transform: scale(1); opacity: 1;
 }
 @media (max-width: 600px) { .world-stage { min-height: 680px; } }
-@media (prefers-reduced-motion: reduce) { .world-stage .scene-layer { transition: none; } }
