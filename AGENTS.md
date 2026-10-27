@@ -1,11 +1,20 @@
 # rosstroha.com
 
-This is a personal website meant as a display of my professional experience. It will also contain content to display hobbies which may be relevant.
+This repository contains a personal portfolio built with React, TypeScript, and Vite. Its nested isometric worlds present professional experience, projects, and interests.
 
-## Default Directives
+## Project guidance
 
-The directives in this file are to be applied all of the time.
+- Keep changes scoped to the requested behavior. Preserve existing navigation, URL, accessibility, responsive, and reduced-motion behavior unless the task changes them.
+- Favor readable TypeScript, JSX, and CSS. Put statements on separate lines, separate logical phases with blank lines, and expand nested JSX and multi-statement callbacks.
+- Apply KISS and YAGNI to behavior, dependencies, and abstractions. Do not add dependencies or code for hypothetical cases.
+- Do not modify unrelated or pre-existing untracked files.
 
-## Direct Overrides
+## Commands
 
-Only when writing or reviewing tests should you read @test/AGENTS.md.
+- `npm run dev` starts the Vite development server.
+- `npm run typecheck` checks TypeScript.
+- `npm test` runs unit tests.
+- `npm run test:browser` runs Playwright browser tests.
+- `npm run build` creates the production build.
+
+Run checks relevant to the change. Browser tests need a local Vite server and may require an environment that permits starting it.
