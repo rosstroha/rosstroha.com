@@ -1,5 +1,87 @@
 import { test, expect } from '@playwright/test'
 
+test('diamonds move between their preview positions and expanded layout', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  for (const control of ['About', 'Return to Ross Troha']) {
+    await page.getByRole('button', { name: control, exact: true }).click()
+
+    const samples = await page.evaluate(() => {
+      const stage = document.querySelector<HTMLElement>('.world-stage')!
+      const inner = stage.querySelector<HTMLElement>('[data-layer="inner"]')!
+      const preview = stage.querySelector<HTMLElement>(
+        '[data-layer="parent"] [data-world-tile="about"]',
+      )!
+      const animations = stage.getAnimations({ subtree: true })
+      const entering = stage.dataset.transition === 'enter'
+
+      animations.forEach((animation) => animation.pause())
+
+      const positions = [0, 450, 899].map((time) => {
+        animations.forEach((animation) => {
+          animation.currentTime = entering ? time : 899 - time
+        })
+
+        return [...inner.querySelectorAll<HTMLElement>('.main-tile, .world-tile')]
+          .map((tile) => {
+            const source = preview.querySelector<HTMLElement>(
+              tile.dataset.worldTile
+                ? `[data-world-preview="${tile.dataset.worldTile}"] i`
+                : '.miniature-center',
+            )!
+            const sourceBounds = source.getBoundingClientRect()
+            const tileBounds = tile.getBoundingClientRect()
+            const layerBounds = inner.getBoundingClientRect()
+
+            return {
+              distance: Math.hypot(
+                tileBounds.left + tileBounds.width / 2 -
+                  sourceBounds.left - sourceBounds.width / 2,
+                tileBounds.top + tileBounds.height / 2 -
+                  sourceBounds.top - sourceBounds.height / 2,
+              ),
+              x: (tileBounds.left + tileBounds.width / 2 - layerBounds.left) /
+                layerBounds.width,
+              y: (tileBounds.top + tileBounds.height / 2 - layerBounds.top) /
+                layerBounds.height,
+            }
+          })
+      })
+
+      animations.forEach((animation) => {
+        animation.currentTime = 899
+        animation.play()
+      })
+
+      return positions
+    })
+
+    for (const tile of samples[0]) {
+      expect(tile.distance).toBeLessThan(1)
+    }
+
+    // Both child diamonds change position within the expanding scene.
+    for (const index of [1, 2]) {
+      const start = samples[0][index]
+      const middle = samples[1][index]
+      const end = samples[2][index]
+
+      expect(Math.hypot(end.x - start.x, end.y - start.y)).toBeGreaterThan(0.02)
+      expect(middle.x).toBeGreaterThan(Math.min(start.x, end.x))
+      expect(middle.x).toBeLessThan(Math.max(start.x, end.x))
+      expect(middle.y).toBeGreaterThan(Math.min(start.y, end.y))
+      expect(middle.y).toBeLessThan(Math.max(start.y, end.y))
+    }
+
+    await expect(page.locator('.world-stage')).toHaveAttribute(
+      'data-transition',
+      'idle',
+    )
+  }
+})
+
 test('nested worlds expand and return to their original place', async ({
   page,
 }) => {

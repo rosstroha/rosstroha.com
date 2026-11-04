@@ -206,6 +206,92 @@ function App(): React.JSX.Element {
       fill: 'both',
     }
 
+    const innerWorld = journey.direction === 'enter' ? journey.to : journey.from
+    const parentWorld = journey.direction === 'enter' ? journey.from : journey.to
+    const branch = getBranch(parentWorld, innerWorld)
+    const preview = parentLayer.querySelector<HTMLElement>(
+      `[data-world-tile="${branch?.id}"]`,
+    )
+    const tileAnimations: Animation[] = []
+
+    // Map preview diamonds into the unscaled scene before expanding the layer.
+    if (preview && typeof layer.animate === 'function') {
+      const tiles = layer.querySelectorAll<HTMLElement>('.main-tile, .world-tile')
+      const scaleX = width / bounds.width
+      const scaleY = height / bounds.height
+      const connectors = layer.querySelector<SVGSVGElement>('.connectors')
+      const connectorMatrix = connectors?.getScreenCTM()?.inverse()
+      const previewPoints: DOMPoint[] = []
+
+      for (const tile of tiles) {
+        const source = preview.querySelector<HTMLElement>(
+          tile.dataset.worldTile
+            ? `[data-world-preview="${tile.dataset.worldTile}"] i`
+            : '.miniature-center',
+        )
+
+        if (!source) {
+          continue
+        }
+
+        const sourceBounds = source.getBoundingClientRect()
+        const tileBounds = tile.getBoundingClientRect()
+        const surfaceWidth = parseFloat(getComputedStyle(tile, '::before').width)
+        const surfaceSize = surfaceWidth * Math.SQRT2
+        const sourceX = sourceBounds.left + sourceBounds.width / 2
+        const sourceY = sourceBounds.top + sourceBounds.height / 2
+        const tileX = tileBounds.left + tileBounds.width / 2
+        const tileY = tileBounds.top + tileBounds.height / 2
+        const offsetX =
+          (sourceX - bounds.left - bounds.width / 2 - x) / scaleX -
+          (tileX - bounds.left - bounds.width / 2)
+        const offsetY =
+          (sourceY - bounds.top - bounds.height / 2 - y) / scaleY -
+          (tileY - bounds.top - bounds.height / 2)
+        const tileScaleX = sourceBounds.width / (surfaceSize * scaleX)
+        const tileScaleY = sourceBounds.height / (surfaceSize * 0.58 * scaleY)
+
+        if (connectorMatrix) {
+          previewPoints.push(
+            new DOMPoint(tileX + offsetX, tileY + offsetY)
+              .matrixTransform(connectorMatrix),
+          )
+        }
+
+        const frames = [
+          {
+            transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${tileScaleX}, ${tileScaleY})`,
+          },
+          { transform: 'translate(-50%, -50%) scale(1, 1)' },
+        ]
+
+        if (journey.direction === 'return') {
+          frames.reverse()
+        }
+
+        tileAnimations.push(tile.animate(frames, options))
+      }
+
+      const path = connectors?.querySelector('path')
+      const [center, ...children] = previewPoints
+
+      if (path && center) {
+        const miniaturePath = children.map((point) =>
+          `M${center.x} ${center.y} ${point.x} ${point.y}`,
+        ).join('')
+        const frames = [
+          { d: `path("${miniaturePath}")` },
+          { d: `path("${path.getAttribute('d')}")` },
+        ]
+
+        if (journey.direction === 'return') {
+          frames.reverse()
+        }
+
+        tileAnimations.push(path.animate(frames, options))
+      }
+    }
+
     const animation = layer.animate?.(
       transforms.map((transform) => ({ transform })),
       options,
@@ -218,6 +304,7 @@ function App(): React.JSX.Element {
     if (!started) {
       animation?.pause()
       parentAnimation?.pause()
+      tileAnimations.forEach((tileAnimation) => tileAnimation.pause())
     } else if (animation) {
       animation.onfinish = complete
     }
@@ -225,6 +312,7 @@ function App(): React.JSX.Element {
     return () => {
       animation?.cancel()
       parentAnimation?.cancel()
+      tileAnimations.forEach((tileAnimation) => tileAnimation.cancel())
     }
   }, [journey, started])
 

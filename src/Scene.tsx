@@ -129,6 +129,7 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
                 <span
                   key={preview.id}
                   className={`miniature-option mini-position-${previewIndex}`}
+                  data-world-preview={preview.id}
                 >
                   <i />
                   {preview.label}
