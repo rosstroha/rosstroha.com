@@ -318,7 +318,7 @@ h1:focus {
   height: 28px;
   background: #34313e;
   border: 1px solid color-mix(in srgb, var(--accent) 60%, #38313c);
-  border-radius: 5px;
+  border-radius: 18%;
   transform: scaleY(0.58) rotate(45deg);
   box-shadow: 3px 3px var(--accent);
 }
