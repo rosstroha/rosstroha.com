@@ -217,6 +217,10 @@ function App(): React.JSX.Element {
 
   return (
     <main className="world-app">
+      <header className="scene-caption">
+        <a href="#home">ROSS TROHA</a>
+        <span>SOFTWARE ENGINEER</span>
+      </header>
       <div
         ref={stage}
         className="world-stage"

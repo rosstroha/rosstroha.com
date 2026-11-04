@@ -6,10 +6,6 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
       className={`world-scene theme-${node.theme}`}
       data-world-scene={node.id}
     >
-      <div className="scene-caption">
-        <a href="#home">ROSS TROHA</a>
-        <span>SOFTWARE ENGINEER</span>
-      </div>
       <div
         className={`scene-stage ${node.children?.length === 2 ? 'two-worlds' : ''} ${node.content ? 'leaf-world' : ''}`}
       >
