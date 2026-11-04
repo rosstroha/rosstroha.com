@@ -160,31 +160,46 @@ function App(): React.JSX.Element {
 
     const viewport = stage.current!
     const layer = viewport.querySelector<HTMLElement>('[data-layer="inner"]')!
+    const parentLayer = viewport.querySelector<HTMLElement>(
+      '[data-layer="parent"]',
+    )!
     const bounds = viewport.getBoundingClientRect()
     const { x, y, width, height } = journey.origin
     const miniature = `translate(${x}px, ${y}px) scale(${width / bounds.width}, ${height / bounds.height})`
     const transforms = [miniature, 'translate(0, 0) scale(1, 1)']
+    const parentTransforms = ['scale(1)', 'scale(1.12)']
 
     if (journey.direction === 'return') {
       transforms.reverse()
+      parentTransforms.reverse()
+    }
+
+    const options: KeyframeAnimationOptions = {
+      duration,
+      easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+      fill: 'both',
     }
 
     const animation = layer.animate?.(
       transforms.map((transform) => ({ transform })),
-      {
-        duration,
-        easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
-        fill: 'both',
-      },
+      options,
+    )
+    const parentAnimation = parentLayer.animate?.(
+      parentTransforms.map((transform) => ({ transform })),
+      options,
     )
 
     if (!started) {
       animation?.pause()
+      parentAnimation?.pause()
     } else if (animation) {
       animation.onfinish = complete
     }
 
-    return () => animation?.cancel()
+    return () => {
+      animation?.cancel()
+      parentAnimation?.cancel()
+    }
   }, [journey, started])
 
   const createNodes = (node: World) => {

@@ -62,14 +62,12 @@
   [data-layer='parent'],
 .world-stage[data-transition='return'][data-started='false']
   [data-layer='parent'] {
-  transform: scale(1.12);
   opacity: 0.08;
 }
 .world-stage[data-transition='enter'][data-started='false']
   [data-layer='parent'],
 .world-stage[data-transition='return'][data-started='true']
   [data-layer='parent'] {
-  transform: scale(1);
   opacity: 1;
 }
 @media (max-width: 600px) {

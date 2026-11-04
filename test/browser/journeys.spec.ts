@@ -63,9 +63,20 @@ for (const [category, leaf] of [
       page.getByRole('heading', { name: category, exact: true }),
     ).toBeFocused()
     await page.getByRole('button', { name: leaf, exact: true }).click()
-    await expect(
-      page.getByText(`Placeholder content for ${leaf}.`, { exact: false }),
-    ).toBeVisible()
+    if (leaf === 'Social') {
+      await expect(page.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+        'href',
+        'https://www.linkedin.com/in/rosstroha',
+      )
+      await expect(page.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+        'href',
+        'https://github.com/rosstroha',
+      )
+    } else {
+      await expect(
+        page.getByText(`Placeholder content for ${leaf}.`, { exact: false }),
+      ).toBeVisible()
+    }
     await expect(
       page.getByRole('heading', { name: leaf, exact: true }),
     ).toBeFocused()
@@ -177,4 +188,51 @@ test('entry and return animate geometry while blocking repeated activation', asy
   await expect(
     page.getByRole('button', { name: 'About', exact: true }),
   ).toBeFocused()
+})
+
+test('parent scaling stays aligned with entry and return progress', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  for (const control of ['About', 'Return to Ross Troha']) {
+    await page.getByRole('button', { name: control, exact: true }).click()
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const parent = document.querySelector('[data-layer="parent"]')!
+          const inner = document.querySelector('[data-layer="inner"]')
+
+          if (!inner) {
+            return false
+          }
+
+          const parentScale = new DOMMatrix(getComputedStyle(parent).transform).a
+          const innerScale = new DOMMatrix(getComputedStyle(inner).transform).a
+          const animation = inner.getAnimations().find((candidate) =>
+            (candidate.effect as KeyframeEffect)
+              .getKeyframes()
+              .some((frame) => frame.transform),
+          )!
+          const frames = (animation.effect as KeyframeEffect).getKeyframes()
+          const miniatureScale = Math.min(
+            ...frames.map((frame) => new DOMMatrix(frame.transform as string).a),
+          )
+          const expansion = (innerScale - miniatureScale) / (1 - miniatureScale)
+
+          return (
+            parentScale > 1.005 &&
+            parentScale < 1.115 &&
+            Math.abs(parentScale - (1 + 0.12 * expansion)) < 0.002
+          )
+        }),
+      )
+      .toBe(true)
+
+    await expect(page.locator('.world-stage')).toHaveAttribute(
+      'data-transition',
+      'idle',
+    )
+  }
 })

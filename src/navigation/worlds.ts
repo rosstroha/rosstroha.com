@@ -5,6 +5,7 @@ export interface World {
   theme: string
   children?: World[]
   content?: string
+  links?: { label: string; href: string }[]
 }
 
 const leaf = (id: string, label: string, theme: string): World => ({
@@ -58,7 +59,16 @@ export const home: World = {
       theme: 'contact',
       children: [
         leaf('email', 'Email', 'contact'),
-        leaf('social', 'Social', 'contact'),
+        {
+          id: 'social',
+          label: 'Social',
+          description: 'Find me on LinkedIn and GitHub.',
+          theme: 'contact',
+          links: [
+            { label: 'LinkedIn', href: 'https://www.linkedin.com/in/rosstroha' },
+            { label: 'GitHub', href: 'https://github.com/rosstroha' },
+          ],
+        },
       ],
     },
   ],
