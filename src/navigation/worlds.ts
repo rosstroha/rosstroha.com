@@ -2,15 +2,15 @@ export interface World {
   id: string
   label: string
   description: string
-  accent: string
+  theme: string
   children?: World[]
   content?: string
 }
 
-const leaf = (id: string, label: string, accent: string): World => ({
+const leaf = (id: string, label: string, theme: string): World => ({
   id,
   label,
-  accent,
+  theme,
   description: `Explore ${label.toLowerCase()}.`,
   content: `Placeholder content for ${label}.`,
 })
@@ -19,46 +19,46 @@ export const home: World = {
   id: 'home',
   label: 'Ross Troha',
   description: 'Software engineering, projects, and interests.',
-  accent: '#a855f7',
+  theme: 'home',
   children: [
     {
       id: 'about',
       label: 'About',
       description: 'Background and interests.',
-      accent: '#48d4e7',
+      theme: 'about',
       children: [
-        leaf('biography', 'Biography', '#48d4e7'),
-        leaf('interests', 'Interests', '#48d4e7'),
+        leaf('biography', 'Biography', 'about'),
+        leaf('interests', 'Interests', 'about'),
       ],
     },
     {
       id: 'work',
       label: 'Work',
       description: 'Professional experience and technical skills.',
-      accent: '#f4b65c',
+      theme: 'work',
       children: [
-        leaf('experience', 'Experience', '#f4b65c'),
-        leaf('skills', 'Skills', '#f4b65c'),
+        leaf('experience', 'Experience', 'work'),
+        leaf('skills', 'Skills', 'work'),
       ],
     },
     {
       id: 'projects',
       label: 'Projects',
       description: 'Featured software and experiments.',
-      accent: '#b49aff',
+      theme: 'projects',
       children: [
-        leaf('featured', 'Featured', '#b49aff'),
-        leaf('experiments', 'Experiments', '#b49aff'),
+        leaf('featured', 'Featured', 'projects'),
+        leaf('experiments', 'Experiments', 'projects'),
       ],
     },
     {
       id: 'contact',
       label: 'Contact',
       description: 'Start a conversation.',
-      accent: '#43d5b1',
+      theme: 'contact',
       children: [
-        leaf('email', 'Email', '#43d5b1'),
-        leaf('social', 'Social', '#43d5b1'),
+        leaf('email', 'Email', 'contact'),
+        leaf('social', 'Social', 'contact'),
       ],
     },
   ],

@@ -1,12 +1,10 @@
-import type { CSSProperties } from 'react'
 import type { SceneProps } from './navigation/contracts'
 
 export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
   return (
     <section
-      className="world-scene"
+      className={`world-scene theme-${node.theme}`}
       data-world-scene={node.id}
-      style={{ '--accent': node.accent } as CSSProperties}
     >
       <div className="scene-caption">
         <a href="#home">ROSS TROHA</a>
@@ -35,10 +33,9 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
           {parent && (
             <button
               type="button"
-              className="return-control"
+              className={`return-control theme-${parent.theme}`}
               aria-label={`Return to ${parent.label}`}
               title={`Return to ${parent.label}`}
-              style={{ '--parent-accent': parent.accent } as CSSProperties}
               disabled={busy}
               onClick={onReturn}
             >
@@ -84,8 +81,7 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
           <button
             key={child.id}
             type="button"
-            className={`world-tile position-${index}`}
-            style={{ '--accent': child.accent } as CSSProperties}
+            className={`world-tile position-${index} theme-${child.theme}`}
             aria-label={child.label}
             data-world-tile={child.id}
             disabled={busy}

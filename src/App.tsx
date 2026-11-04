@@ -3,7 +3,6 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  type CSSProperties,
 } from 'react'
 import { Scene } from './Scene'
 import { useWorldNavigation } from './navigation/useWorldNavigation'
@@ -146,13 +145,47 @@ function App(): React.JSX.Element {
 
     if (tile) {
       const layer = tile.closest<HTMLElement>('.scene-layer')!
-      layer.style.transform = 'none'
+      layer.classList.add('measuring')
       const origin = measure(tile)
-      layer.style.removeProperty('transform')
+      layer.classList.remove('measuring')
 
       setJourney({ ...journey, origin })
     }
   }, [journey])
+
+  useLayoutEffect(() => {
+    if (!journey) {
+      return
+    }
+
+    const viewport = stage.current!
+    const layer = viewport.querySelector<HTMLElement>('[data-layer="inner"]')!
+    const bounds = viewport.getBoundingClientRect()
+    const { x, y, width, height } = journey.origin
+    const miniature = `translate(${x}px, ${y}px) scale(${width / bounds.width}, ${height / bounds.height})`
+    const transforms = [miniature, 'translate(0, 0) scale(1, 1)']
+
+    if (journey.direction === 'return') {
+      transforms.reverse()
+    }
+
+    const animation = layer.animate?.(
+      transforms.map((transform) => ({ transform })),
+      {
+        duration,
+        easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+        fill: 'both',
+      },
+    )
+
+    if (!started) {
+      animation?.pause()
+    } else if (animation) {
+      animation.onfinish = complete
+    }
+
+    return () => animation?.cancel()
+  }, [journey, started])
 
   const createNodes = (node: World) => {
     const active = node.id === current.id
@@ -168,15 +201,6 @@ function App(): React.JSX.Element {
         data-layer={expanding ? 'inner' : 'parent'}
         aria-hidden={!active}
         inert={!active}
-        onTransitionEnd={(event) => {
-          if (
-            event.target === event.currentTarget &&
-            event.propertyName === 'transform' &&
-            expanding
-          ) {
-            complete()
-          }
-        }}
       >
         <Scene
           node={node}
@@ -189,20 +213,6 @@ function App(): React.JSX.Element {
     )
   }
 
-  const viewport = stage.current?.getBoundingClientRect()
-  const variables = journey
-    ? ({
-        '--origin-x': `${journey.origin.x}px`,
-        '--origin-y': `${journey.origin.y}px`,
-        '--mini-x': String(
-          journey.origin.width / (viewport?.width || window.innerWidth || 1),
-        ),
-        '--mini-y': String(
-          journey.origin.height / (viewport?.height || window.innerHeight || 1),
-        ),
-      } as CSSProperties)
-    : undefined
-
   const nodes = journey ? [journey.from, journey.to] : [current]
 
   return (
@@ -210,7 +220,6 @@ function App(): React.JSX.Element {
       <div
         ref={stage}
         className="world-stage"
-        style={variables}
         data-transition={journey ? journey.direction : 'idle'}
         data-started={started}
         aria-busy={Boolean(journey)}
