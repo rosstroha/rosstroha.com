@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .background {
+      fill: #14151a;
+    }
+
+    .initials {
+      fill: #eeedf3;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .background {
+        fill: #eeedf3;
+      }
+
+      .initials {
+        fill: #14151a;
+      }
+    }
+  </style>
+
+  <rect class="background" width="64" height="64" rx="12" />
+  <path
+    class="initials"
+    fill-rule="evenodd"
+    d="M12 18h12a9 9 0 0 1 4 17l8 11h-8l-7-10h-3v10h-6V18Zm6 6v6h6a3 3 0 0 0 0-6h-6Z"
+  />
+  <path class="initials" d="M34 18h22v6h-8v22h-6V24h-8Z" />
+</svg>
