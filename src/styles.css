@@ -63,11 +63,20 @@ button:disabled {
   color: #8a8995;
 }
 .scene-caption a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   color: #c7c3d2;
   text-decoration: none;
+  text-underline-offset: 4px;
 }
-.scene-caption a:hover {
+.scene-caption a:is(:hover, :focus-visible) {
   text-decoration: underline;
+}
+.home-icon {
+  width: 1.2em;
+  height: 1.2em;
+  opacity: 0.65;
 }
 .profile-links {
   display: flex;

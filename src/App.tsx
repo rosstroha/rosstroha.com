@@ -233,7 +233,21 @@ function App(): React.JSX.Element {
   return (
     <main className="world-app">
       <header className="scene-caption">
-        <a href="#home">ROSS TROHA</a>
+        <a href="#home">
+          <svg
+            className="home-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m3 10 9-7 9 7M5 8.5V21h5v-7h4v7h5V8.5" />
+          </svg>
+          ROSS TROHA
+        </a>
         <span>SOFTWARE ENGINEER</span>
       </header>
       <div
