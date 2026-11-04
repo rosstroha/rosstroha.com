@@ -1,13 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { home, worlds, type World } from './worlds'
 
-export function useWorldNavigation(): {
+export function useWorldNavigation(
+  onNavigate?: (from: World, to: World) => void,
+): {
   current: World
   navigate: (world: World) => void
 } {
   const [current, setCurrent] = useState(
     () => worlds.get(window.location.hash.slice(1)) ?? home,
   )
+  const currentWorld = useRef(current)
+  const onNavigateRef = useRef(onNavigate)
+
+  useLayoutEffect(() => {
+    onNavigateRef.current = onNavigate
+  }, [onNavigate])
+
+  const changeWorld = useCallback((world: World) => {
+    const previous = currentWorld.current
+
+    if (previous.id === world.id) {
+      return
+    }
+
+    onNavigateRef.current?.(previous, world)
+    currentWorld.current = world
+    setCurrent(world)
+  }, [])
 
   useEffect(() => {
     const update = () => {
@@ -17,7 +37,7 @@ export function useWorldNavigation(): {
         window.history.replaceState(null, '', '#home')
       }
 
-      setCurrent(world ?? home)
+      changeWorld(world ?? home)
     }
 
     update()
@@ -28,11 +48,15 @@ export function useWorldNavigation(): {
       window.removeEventListener('popstate', update)
       window.removeEventListener('hashchange', update)
     }
-  }, [])
+  }, [changeWorld])
 
   const navigate = (world: World) => {
+    if (world.id === currentWorld.current.id) {
+      return
+    }
+
     window.history.pushState(null, '', `#${world.id}`)
-    setCurrent(world)
+    changeWorld(world)
   }
 
   return { current, navigate }

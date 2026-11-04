@@ -119,6 +119,94 @@ test('direct addresses survive refresh and browser history', async ({
   await expect(page).toHaveURL(/#home$/)
 })
 
+test('the home link and browser history animate between home and a nested world', async ({
+  page,
+}) => {
+  await page.goto('/#social')
+  await page.getByRole('link', { name: 'ROSS TROHA', exact: true }).click()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'return',
+  )
+  await expect(
+    page.getByRole('button', { name: 'Contact', exact: true }),
+  ).toBeFocused()
+  await expect(page).toHaveURL(/#home$/)
+
+  await page.goBack()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'enter',
+  )
+  await expect(
+    page.getByRole('heading', { name: 'Social', exact: true }),
+  ).toBeFocused()
+  await expect(page).toHaveURL(/#social$/)
+
+  await page.goForward()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'return',
+  )
+  await expect(
+    page.getByRole('button', { name: 'Contact', exact: true }),
+  ).toBeFocused()
+  await expect(page).toHaveURL(/#home$/)
+})
+
+test('browser history can reverse an unfinished transition', async ({ page }) => {
+  await page.goto('/#home')
+  await page.getByRole('button', { name: 'About', exact: true }).click()
+  await page.goBack()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'return',
+  )
+  await page.goForward()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'enter',
+  )
+  await expect(
+    page.getByRole('heading', { name: 'About', exact: true }),
+  ).toBeFocused()
+  await expect(page.locator('.scene-layer')).toHaveCount(1)
+  await expect(
+    page.getByRole('button', { name: 'Biography', exact: true }),
+  ).toBeEnabled()
+})
+
+test('home and browser history respect reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/#social')
+  await page.getByRole('link', { name: 'ROSS TROHA', exact: true }).click()
+  await expect(
+    page.getByRole('button', { name: 'Contact', exact: true }),
+  ).toBeFocused()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'idle',
+  )
+
+  await page.goBack()
+  await expect(
+    page.getByRole('heading', { name: 'Social', exact: true }),
+  ).toBeFocused()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'idle',
+  )
+
+  await page.goForward()
+  await expect(
+    page.getByRole('button', { name: 'Contact', exact: true }),
+  ).toBeFocused()
+  await expect(page.locator('.world-stage')).toHaveAttribute(
+    'data-transition',
+    'idle',
+  )
+})
+
 test('keyboard visitors can enter and return with visible focus', async ({
   page,
 }) => {

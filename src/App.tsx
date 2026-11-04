@@ -12,17 +12,57 @@ import './transitions.css'
 
 const duration = 900
 
+function getBranch(ancestor: World, descendant: World): World | undefined {
+  let node: World | undefined = descendant
+
+  while (node) {
+    const parent = parents.get(node.id)
+
+    if (parent?.id === ancestor.id) {
+      return node
+    }
+
+    node = parent
+  }
+
+  return undefined
+}
+
 function App(): React.JSX.Element {
-  const { current, navigate } = useWorldNavigation()
   const stage = useRef<HTMLDivElement>(null)
   const [journey, setJourney] = useState<Journey | null>(null)
   const [started, setStarted] = useState(false)
   const focusTile = useRef<string | null>(null)
-  const previousWorld = useRef(current)
   const returnMeasured = useRef(false)
   const [reduced, setReduced] = useState(
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   )
+  const { current, navigate } = useWorldNavigation((from, to) => {
+    setStarted(false)
+    returnMeasured.current = false
+
+    if (reduced) {
+      setJourney(null)
+      return
+    }
+
+    const branch = getBranch(from, to)
+    const tile = branch
+      ? stage.current?.querySelector<HTMLElement>(
+          `[data-world-scene="${from.id}"] [data-world-tile="${branch.id}"]`,
+        )
+      : null
+
+    setJourney({
+      from,
+      to,
+      direction: branch ? 'enter' : 'return',
+      origin: tile
+        ? measure(tile)
+        : { x: 0, y: 0, width: 160, height: 100 },
+    })
+  })
+  const previousWorld = useRef(current)
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -61,9 +101,7 @@ function App(): React.JSX.Element {
   useLayoutEffect(() => {
     if (previousWorld.current.id !== current.id) {
       focusTile.current =
-        parents.get(previousWorld.current.id)?.id === current.id
-          ? previousWorld.current.id
-          : null
+        getBranch(current, previousWorld.current)?.id ?? null
       previousWorld.current = current
     }
 
@@ -98,15 +136,9 @@ function App(): React.JSX.Element {
     }
   }
 
-  const enter = (node: World, element: HTMLElement) => {
+  const enter = (node: World) => {
     if (journey) {
       return
-    }
-
-    const origin = measure(element)
-
-    if (!reduced) {
-      setJourney({ from: current, to: node, direction: 'enter', origin })
     }
 
     navigate(node)
@@ -119,16 +151,6 @@ function App(): React.JSX.Element {
       return
     }
 
-    returnMeasured.current = false
-    if (!reduced) {
-      setJourney({
-        from: current,
-        to: parent,
-        direction: 'return',
-        origin: { x: 0, y: 0, width: 160, height: 100 },
-      })
-    }
-
     navigate(parent)
   }
 
@@ -139,8 +161,12 @@ function App(): React.JSX.Element {
     }
 
     returnMeasured.current = true
+    const branch = getBranch(journey.to, journey.from)
+    const selector = branch
+      ? `[data-world-tile="${branch.id}"]`
+      : '.main-tile'
     const tile = stage.current?.querySelector<HTMLElement>(
-      `[data-world-scene="${journey.to.id}"] [data-world-tile="${journey.from.id}"]`,
+      `[data-world-scene="${journey.to.id}"] ${selector}`,
     )
 
     if (tile) {
