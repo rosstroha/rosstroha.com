@@ -58,7 +58,7 @@ button:disabled {
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  font-size: 10px;
+  font-size: 0.75rem;
   letter-spacing: 0.22em;
   color: #8a8995;
 }
@@ -80,7 +80,9 @@ button:disabled {
 }
 .profile-links {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
 }
 .profile-links a {
   display: flex;
@@ -115,9 +117,9 @@ button:disabled {
 }
 .scene-stage {
   position: relative;
-  width: min(1000px, 100%);
-  height: min(680px, calc(100svh - 100px));
-  min-height: 540px;
+  width: min(62.5rem, 100%);
+  height: min(42.5rem, calc(100svh - 6.25rem));
+  min-height: 33.75rem;
 }
 .connectors {
   position: absolute;
@@ -131,6 +133,10 @@ button:disabled {
   stroke: #54535f;
   stroke-width: 1.4;
   opacity: 0.7;
+}
+.world-description.profile-links {
+  width: fit-content;
+  max-width: 100%;
 }
 .main-tile,
 .world-tile {
@@ -146,9 +152,9 @@ button:disabled {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 430px;
-  height: 290px;
-  padding: 42px 55px;
+  width: min(26.875rem, 100%);
+  min-height: 18.125rem;
+  padding: 2.625rem 3.4375rem;
 }
 .main-tile {
   pointer-events: none;
@@ -174,6 +180,12 @@ button:disabled {
     10px 10px 0 color-mix(in srgb, var(--accent) 80%, #351752),
     15px 15px 0 color-mix(in srgb, var(--accent) 45%, #271438),
     28px 36px 40px #0008;
+}
+.main-tile::before {
+  /* Size the square surface from the content height so it grows with the text. */
+  width: auto;
+  height: calc(430 / 290 * 80%);
+  aspect-ratio: 1;
 }
 .main-tile::after {
   content: '';
@@ -205,13 +217,15 @@ button:disabled {
   height: 30px;
 }
 .tile-eyebrow {
-  font-size: 8px;
+  font-size: 0.625rem;
   letter-spacing: 0.2em;
   color: #a2a0b0;
   margin-bottom: 8px;
 }
 h1 {
-  font-size: 34px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 2.125rem;
   letter-spacing: -0.055em;
   line-height: 1.1;
   margin: 0;
@@ -221,15 +235,16 @@ h1:focus {
   outline: none;
 }
 .world-description {
-  max-width: 180px;
+  max-width: min(11.25rem, 100%);
+  overflow-wrap: anywhere;
   margin: 10px 0 0;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.65;
   color: #a09dac;
 }
 .world-tile {
-  width: 230px;
-  height: 180px;
+  width: min(14.375rem, 38%);
+  min-height: 11.25rem;
   transform: translate(-50%, -50%);
   background: none;
   border: 0;
@@ -278,14 +293,16 @@ h1:focus {
   top: 76.47%;
 }
 .child-label {
-  font-size: 19px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 1.1875rem;
   font-weight: 500;
   letter-spacing: -0.04em;
   margin-top: 3px;
 }
 .tile-invitation {
   margin-top: 6px;
-  font-size: 7px;
+  font-size: 0.4375rem;
   letter-spacing: 0.16em;
   color: #9c96aa;
   display: flex;
@@ -329,7 +346,7 @@ h1:focus {
 .miniature-option {
   position: absolute;
   color: #a9a4b5;
-  font-size: 5px;
+  font-size: 0.3125rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -365,9 +382,9 @@ h1:focus {
 }
 /* The touch target stays upright while its inset surface follows the world perspective. */
 .return-control {
-  position: absolute;
-  top: 65px;
-  left: calc(50% - 22px);
+  position: relative;
+  flex-shrink: 0;
+  margin-bottom: 0.75rem;
   width: 44px;
   height: 44px;
   padding: 9px;
@@ -448,42 +465,42 @@ h1:focus {
   background: color-mix(in srgb, var(--accent) 12%, #24232c);
 }
 .main-tile:has(.return-control) > .world-marker {
-  visibility: hidden;
+  display: none;
 }
 .leaf-world .main-tile {
-  width: 510px;
-  height: 350px;
-  padding: 55px 110px 85px;
+  width: min(31.875rem, 100%);
+  min-height: 21.875rem;
+  padding: 3.4375rem min(6.875rem, 25%) 5.3125rem;
 }
-.leaf-world .return-control {
-  top: 70px;
+.leaf-world .main-tile::before {
+  height: calc(510 / 350 * 80%);
 }
 .leaf-world .world-description {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 @media (max-width: 700px) {
   .scene-caption {
     top: 24px;
     left: 23px;
     right: 23px;
-    font-size: 8px;
+    font-size: 0.625rem;
   }
   .scene-stage {
     width: 100%;
-    height: min(690px, calc(100svh - 80px));
-    min-height: 570px;
+    height: min(43.125rem, calc(100svh - 5rem));
+    min-height: 35.625rem;
   }
   .main-tile {
-    width: 310px;
-    height: 230px;
-    padding: 20px 55px 40px;
+    width: min(19.375rem, 100%);
+    min-height: 14.375rem;
+    padding: 1.25rem min(3.4375rem, 18%) 2.5rem;
   }
   h1 {
-    font-size: 25px;
+    font-size: 1.5625rem;
   }
   .world-description {
-    max-width: 140px;
-    font-size: 10px;
+    max-width: min(8.75rem, 100%);
+    font-size: 0.75rem;
     line-height: 1.5;
     margin-top: 6px;
   }
@@ -498,13 +515,13 @@ h1:focus {
     height: 23px;
   }
   .tile-eyebrow {
-    font-size: 6px;
+    font-size: 0.625rem;
     margin-bottom: 4px;
   }
   .world-tile {
-    width: 170px;
-    height: 145px;
-    padding: 20px 10px;
+    width: min(10.625rem, 48%);
+    min-height: 9.0625rem;
+    padding: 1.25rem 0.625rem;
   }
   .world-tile.position-0,
   .world-tile.position-2 {
@@ -534,28 +551,28 @@ h1:focus {
     bottom: auto;
   }
   .child-label {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .tile-invitation {
-    font-size: 5px;
+    font-size: 0.3125rem;
     margin-top: 3px;
   }
   .connectors {
     transform: scaleX(0.8) scaleY(1.2);
   }
-  .return-control {
-    top: 45px;
-  }
   .leaf-world .main-tile {
-    width: 340px;
-    height: 280px;
-    padding: 35px 85px;
+    width: min(21.25rem, 100%);
+    min-height: 17.5rem;
+    padding: 2.1875rem min(5.3125rem, 22vw);
   }
-  .leaf-world .return-control {
-    top: 52px;
+  .main-tile::before {
+    height: calc(310 / 230 * 80%);
+  }
+  .leaf-world .main-tile::before {
+    height: calc(340 / 280 * 84%);
   }
   .leaf-world .world-description {
-    font-size: 10px;
+    font-size: 0.75rem;
   }
   .leaf-world .world-marker,
   .leaf-world .tile-eyebrow {
@@ -571,25 +588,65 @@ h1:focus {
 }
 @media (max-width: 360px) {
   .world-tile {
-    width: 150px;
+    width: min(9.375rem, 48%);
     padding-bottom: 40px;
   }
   .miniature {
     transform: scale(0.6);
   }
   .leaf-world .main-tile {
-    width: 300px;
-    height: 240px;
-    padding: 28px 65px;
+    width: min(18.75rem, 100%);
+    min-height: 15rem;
+    padding: 1.75rem min(4.0625rem, 21.6667vw);
   }
   .leaf-world .world-description {
-    max-width: 140px;
-    font-size: 9.5px;
+    font-size: 0.75rem;
     line-height: 1.5;
     margin-top: 8px;
   }
-  .leaf-world .return-control {
-    top: 45px;
+  .leaf-world .main-tile::before {
+    height: calc(300 / 240 * 96%);
+  }
+}
+
+/* Stack worlds when the available width cannot accommodate the preferred text size. */
+@container (width < 20rem) {
+  .world-stage {
+    display: grid;
+    height: auto;
+  }
+
+  .scene-layer {
+    position: relative;
+    inset: auto;
+    grid-area: 1 / 1;
+  }
+
+  .scene-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    height: auto;
+    min-height: 0;
+    padding: 8rem 1rem 4rem;
+  }
+
+  .scene-stage .main-tile,
+  .scene-stage .world-tile {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .scene-stage .main-tile::before {
+    height: 120%;
+  }
+
+  .connectors {
+    display: none;
   }
 }
 
