@@ -135,7 +135,7 @@ test('entry expands a world surface instead of a rectangular overlay', async ({
 
 for (const [category, leaf] of [
   ['Work', 'Skills'],
-  ['Projects', 'Experiments'],
+  ['Projects', 'Home Automation'],
   ['Contact', 'Social'],
 ]) {
   test(`${category} has a complete nested journey`, async ({ page }) => {

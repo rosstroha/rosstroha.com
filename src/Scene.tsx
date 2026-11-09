@@ -7,7 +7,7 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
       data-world-scene={node.id}
     >
       <div
-        className={`scene-stage ${node.children?.length === 2 ? 'two-worlds' : ''} ${node.content || node.links ? 'leaf-world' : ''}`}
+        className={`scene-stage ${node.children?.length === 2 ? 'two-worlds' : ''} ${node.content || node.links ? 'leaf-world' : ''} ${node.employment ? 'employment-world' : ''}`}
       >
         {node.children && (
           <svg
@@ -18,9 +18,12 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
           >
             <path
               d={
-                node.children.length === 4
-                  ? 'M500 340 190 160M500 340 810 160M500 340 190 520M500 340 810 520'
-                  : 'M500 340 190 160M500 340 810 520'
+                node.children.length === 2
+                  ? 'M500 340 190 160M500 340 810 520'
+                  : ['190 160', '810 160', '190 520', '810 520']
+                      .slice(0, node.children.length)
+                      .map((point) => `M500 340 ${point}`)
+                      .join('')
               }
             />
           </svg>
@@ -52,23 +55,47 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
               </svg>
             </button>
           )}
+          {node.employment && (
+            <a
+              className="employment-logo-link"
+              href={node.employment.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${node.label} logo: website (opens in a new tab)`}
+              inert={busy}
+            >
+              <img
+                className="employment-logo"
+                src={node.employment.logo}
+                alt={`${node.label} logo`}
+              />
+            </a>
+          )}
           <span className="world-marker" aria-hidden="true">
             <i />
             <i />
             <i />
           </span>
           <span className="tile-eyebrow">
-            {node.links
-              ? 'FIND ME ONLINE'
-              : node.content
-                ? 'A PLACEHOLDER WORLD'
-                : parent
-                  ? 'A WORLD TO EXPLORE'
-                  : 'WELCOME TO MY CORNER'}
+            {node.employment
+              ? 'PROFESSIONAL EXPERIENCE'
+              : node.links
+                ? 'FIND ME ONLINE'
+                : node.content
+                  ? 'A PLACEHOLDER WORLD'
+                  : parent
+                    ? 'A WORLD TO EXPLORE'
+                    : 'WELCOME TO MY CORNER'}
           </span>
           <h1 tabIndex={-1} data-world-heading={node.id}>
             {node.label}
           </h1>
+          {node.employment && (
+            <p className="employment-meta">
+              <span>{node.employment.role}</span>
+              <span>{node.employment.dates}</span>
+            </p>
+          )}
           {node.links ? (
             <nav
               className="world-description profile-links"
@@ -112,36 +139,68 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
               </p>
             )
           )}
+          {node.employment && (
+            <a
+              className="company-website"
+              href={node.employment.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${node.label} website (external link, opens in a new tab)`}
+              inert={busy}
+            >
+              Company website
+              <svg
+                className="external-link-icon"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9 3h4v4M13 3 7 9M6 3H3v10h10v-3" />
+              </svg>
+            </a>
+          )}
         </div>
         {node.children?.map((child, index) => (
           <button
             key={child.id}
             type="button"
-            className={`world-tile position-${index} theme-${child.theme}`}
+            className={`world-tile position-${index} theme-${child.theme} ${child.employment ? 'company-tile' : ''}`}
             aria-label={child.label}
             data-world-tile={child.id}
             disabled={busy}
             onClick={(event) => onEnter(child, event.currentTarget)}
           >
-            <span className="miniature" aria-hidden="true">
-              <span className="miniature-center" />
-              {child.children?.map((preview, previewIndex) => (
-                <span
-                  key={preview.id}
-                  className={`miniature-option mini-position-${previewIndex}`}
-                  data-world-preview={preview.id}
-                >
-                  <i />
-                  {preview.label}
-                </span>
-              )) ?? (
-                <span className="miniature-lines">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-              )}
-            </span>
+            {child.employment ? (
+              <img
+                className="company-logo"
+                src={child.employment.logo}
+                alt={`${child.label} logo`}
+              />
+            ) : (
+              <span className="miniature" aria-hidden="true">
+                <span className="miniature-center" />
+                {child.children?.map((preview, previewIndex) => (
+                  <span
+                    key={preview.id}
+                    className={`miniature-option mini-position-${previewIndex}`}
+                    data-world-preview={preview.id}
+                  >
+                    <i />
+                    {preview.label}
+                  </span>
+                )) ?? (
+                  <span className="miniature-lines">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                )}
+              </span>
+            )}
             <span className="child-label">{child.label}</span>
             <span className="tile-invitation" aria-hidden="true">
               EXPLORE{' '}

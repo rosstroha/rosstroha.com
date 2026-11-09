@@ -1,6 +1,47 @@
 import { test, expect } from '@playwright/test'
 import { worlds, parents } from '../../src/navigation/worlds'
 
+test('connectors end at the child tiles in each category layout', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+
+  for (const world of ['home', 'about', 'projects']) {
+    await page.goto(`/#${world}`)
+
+    const geometry = await page.locator('.scene-stage').evaluate((stage) => {
+      const svg = stage.querySelector<SVGSVGElement>('.connectors')!
+      const path = svg.querySelector('path')!
+      const matrix = svg.getScreenCTM()!
+      const segments = path.getAttribute('d')!.match(/M[^M]+/g)!
+      const tiles = stage.querySelectorAll('.world-tile')
+
+      const distances = segments.map((segment, index) => {
+        const [, , x, y] = segment.slice(1).trim().split(/\s+/).map(Number)
+        const endpoint = new DOMPoint(x, y).matrixTransform(matrix)
+        const tile = tiles[index].getBoundingClientRect()
+
+        return Math.hypot(
+          endpoint.x - tile.left - tile.width / 2,
+          endpoint.y - tile.top - tile.height / 2,
+        )
+      })
+
+      return {
+        distances,
+        connectorCount: segments.length,
+        tileCount: tiles.length,
+      }
+    })
+
+    expect(geometry.connectorCount, world).toBe(geometry.tileCount)
+
+    for (const distance of geometry.distances) {
+      expect(distance, world).toBeLessThan(3)
+    }
+  }
+})
+
 test('shared captions, exploration cues, and return controls work in every world', async ({
   page,
   isMobile,

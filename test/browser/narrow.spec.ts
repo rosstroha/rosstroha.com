@@ -15,9 +15,14 @@ for (const width of [320, 375, 412, 700, 844, 1397]) {
       'biography',
       'interests',
       'experience',
+      'f5',
+      '6kites',
+      'northwoods',
+      'icc',
       'skills',
-      'featured',
-      'experiments',
+      'software',
+      'home-automation',
+      'van',
       'email',
       'social',
     ]) {
@@ -56,7 +61,7 @@ for (const width of [320, 375, 412, 700, 844, 1397]) {
             const inverse = matrix.inverse()
             return Array.from(
               tile.querySelectorAll(
-                '.return-control, .parent-emblem, .world-marker, .tile-eyebrow, h1, .world-description, .child-label, .tile-invitation, .miniature-center, .miniature-option, .miniature-option i, .miniature-lines i',
+                '.return-control, .parent-emblem, .world-marker, .tile-eyebrow, h1, .world-description, .child-label, .tile-invitation, .miniature-center, .miniature-option, .miniature-option i, .miniature-lines i, .employment-meta span, .company-logo, .employment-logo, .company-website',
               ),
             ).flatMap((child) => {
               if (child.getClientRects().length === 0) {

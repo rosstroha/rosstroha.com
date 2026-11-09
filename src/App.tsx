@@ -213,6 +213,56 @@ function App(): React.JSX.Element {
       `[data-world-tile="${branch?.id}"]`,
     )
     const tileAnimations: Animation[] = []
+    const sourceLogo = preview?.querySelector<HTMLElement>('.company-logo')
+    const targetLogo = layer.querySelector<HTMLElement>('.employment-logo')
+    const transitionLogo = viewport.querySelector<HTMLElement>(
+      '.transition-logo',
+    )
+
+    // Animate the logo outside the scaling scene so its proportions stay intact.
+    if (sourceLogo && targetLogo && transitionLogo) {
+      const sourceBounds = sourceLogo.getBoundingClientRect()
+      const targetBounds = targetLogo.getBoundingClientRect()
+      const logoBounds = transitionLogo.getBoundingClientRect()
+      const frames = [sourceBounds, targetBounds].map((logo) => {
+        const offsetX = logo.left - bounds.left
+        const offsetY = logo.top - bounds.top
+        const scaleX = logo.width / logoBounds.width
+        const scaleY = logo.height / logoBounds.height
+
+        return {
+          transform: `translate(${offsetX}px, ${offsetY}px) scale(${scaleX}, ${scaleY})`,
+        }
+      })
+
+      if (journey.direction === 'return') {
+        frames.reverse()
+      }
+
+      sourceLogo.classList.add('transition-logo-hidden')
+      targetLogo.classList.add('transition-logo-hidden')
+      transitionLogo.classList.add('visible')
+      tileAnimations.push(transitionLogo.animate(frames, options))
+
+      const content = layer.querySelectorAll<HTMLElement>(
+        '.employment-world .tile-eyebrow, .employment-world h1, .employment-meta, .employment-world .world-description, .company-website',
+      )
+      const entering = journey.direction === 'enter'
+      const contentDuration = duration / 4
+
+      for (const element of content) {
+        tileAnimations.push(
+          element.animate(
+            [{ opacity: entering ? 0 : 1 }, { opacity: entering ? 1 : 0 }],
+            {
+              ...options,
+              duration: contentDuration,
+              delay: entering ? duration - contentDuration : 0,
+            },
+          ),
+        )
+      }
+    }
 
     // Map preview diamonds into the unscaled scene before expanding the layer.
     if (preview && typeof layer.animate === 'function') {
@@ -313,6 +363,9 @@ function App(): React.JSX.Element {
       animation?.cancel()
       parentAnimation?.cancel()
       tileAnimations.forEach((tileAnimation) => tileAnimation.cancel())
+      sourceLogo?.classList.remove('transition-logo-hidden')
+      targetLogo?.classList.remove('transition-logo-hidden')
+      transitionLogo?.classList.remove('visible')
     }
   }, [journey, started])
 
@@ -343,6 +396,9 @@ function App(): React.JSX.Element {
   }
 
   const nodes = journey ? [journey.from, journey.to] : [current]
+  const transitionLogo = journey
+    ? (journey.direction === 'enter' ? journey.to : journey.from).employment?.logo
+    : undefined
 
   return (
     <main className="world-app">
@@ -372,6 +428,14 @@ function App(): React.JSX.Element {
         aria-busy={Boolean(journey)}
       >
         {nodes.map(createNodes)}
+        {transitionLogo && (
+          <img
+            className="transition-logo"
+            src={transitionLogo}
+            alt=""
+            aria-hidden="true"
+          />
+        )}
       </div>
     </main>
   )
