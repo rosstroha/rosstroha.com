@@ -76,17 +76,6 @@ export function Scene({ node, parent, busy, onEnter, onReturn }: SceneProps) {
             <i />
             <i />
           </span>
-          <span className="tile-eyebrow">
-            {node.employment
-              ? 'PROFESSIONAL EXPERIENCE'
-              : node.links
-                ? 'FIND ME ONLINE'
-                : node.content
-                  ? 'A PLACEHOLDER WORLD'
-                  : parent
-                    ? 'A WORLD TO EXPLORE'
-                    : 'WELCOME TO MY CORNER'}
-          </span>
           <h1 tabIndex={-1} data-world-heading={node.id}>
             {node.label}
           </h1>

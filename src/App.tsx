@@ -245,7 +245,7 @@ function App(): React.JSX.Element {
       tileAnimations.push(transitionLogo.animate(frames, options))
 
       const content = layer.querySelectorAll<HTMLElement>(
-        '.employment-world .tile-eyebrow, .employment-world h1, .employment-meta, .employment-world .world-description, .company-website',
+        '.employment-world h1, .employment-meta, .employment-world .world-description, .company-website',
       )
       const entering = journey.direction === 'enter'
       const contentDuration = duration / 4
